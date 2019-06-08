@@ -9,23 +9,31 @@ environment:
   BUTLER_API_KEY:
     secure: PbT7/2muaC99K24vd6d+DMQETnal230eqmdPtw4tn+zqhwkKpSRIJgjRmJPxphBF
 install:
-- cmd: >-
+- ps: >-
     git submodule update --init --recursive
 
-    choco install ninja -y
+    iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+    
+    pip install conan
 
-    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+    scoop bucket add AFG https://github.com/AnotherFoxGuy/scoop-bucket.git
+
+    scoop install sonar-build-wrapper-win sonar-scanner-msbuild
 build_script:
-- cmd: >-
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DUSE_PMM=ON .
-
-    ninja install
-test: off
-deploy_script:
 - ps: >-
-    if (($env:APPVEYOR_REPO_BRANCH -eq "master") -and (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER)) {
-    iex (new-object net.webclient).downloadstring('https://get.scoop.sh');
-    scoop install https://raw.githubusercontent.com/AnotherFoxGuy/scoop-bucket/master/butler.json;
-    butler push redist cytopia/cytopia:windows-ci --userversion $env:APPVEYOR_BUILD_VERSION;}
+    cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release .
+
+    if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
+        SonarScanner.MSBuild begin /k:"cytopia" /d:"sonar.cfamily.build-wrapper-output=bw-output" /d:"sonar.host.url=https://sonarqube.com" /d:"sonar.login=$env:SONAR_LOGIN" /o:"cytopia" /v:"$env:APPVEYOR_BUILD_VERSION";
+    }else{
+        SonarScanner.MSBuild begin /k:"cytopia" /d:"sonar.analysis.mode=preview" /d:"sonar.cfamily.build-wrapper-output=bw-output" /d:"sonar.host.url=https://sonarqube.com" /d:"sonar.login=$env:SONAR_LOGIN" /o:"cytopia" /v:"$env:APPVEYOR_BUILD_VERSION" /d:"sonar.github.pullRequest=$env:APPVEYOR_PULL_REQUEST_NUMBER" /d:"sonar.github.repository=RigsOfRods/cytopia" /d:"sonar.github.oauth=$env:GITHUB_ACCESS_TOKEN"
+    }
+    
+    build-wrapper-win-x86-64 --out-dir bw-output msbuild Cytopia.sln
+
+    SonarScanner.MSBuild end /d:"sonar.login=$env:SONAR_LOGIN"
+test_script:
+- cmd: ctest
+
 on_success:
 - cmd: cmake -P cmake/pmm.cmake /Conan /Clean
