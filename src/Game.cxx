@@ -24,6 +24,10 @@
 #include "microprofile.h"
 #endif
 
+#ifdef USE_MOFILEREADER
+#include <moFileReader.h>
+#endif
+
 bool Game::initialize()
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -44,6 +48,16 @@ bool Game::initialize()
   {
     LOG(LOG_ERROR) << "Failed to Init SDL_Mixer\nSDL Error:" << Mix_GetError();
     return false;
+  }
+#endif
+
+#ifdef USE_MOFILEREADER
+  std::string langPath = SDL_GetBasePath();
+  langPath = langPath +"/languages/"+ Settings::instance().language + ".mo";
+  if (moFileLib::moFileReaderSingleton::GetInstance().ReadFile(langPath.c_str()) == moFileLib::moFileReader::EC_SUCCESS)
+  {
+    LOG(LOG_ERROR) << "Failed to init moFileReader\n";
+    LOG(LOG_ERROR) << "langPath: " << langPath;
   }
 #endif
 

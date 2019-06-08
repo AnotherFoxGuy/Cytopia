@@ -139,7 +139,7 @@ public:
   * Set the tooltip text for this ui element. Tooltip is shown when hovering over a ui Element.
   * @param tooltiptext as string
   */
-  void setTooltipText(const std::string &text) { elementData.tooltipText = text; };
+  void setTooltipText(const std::string &text);
 
   /** \brief Get the uiElements tooltip text
   * Get the tooltip text for this ui element. Tooltip is shown when hovering over a ui Element.
