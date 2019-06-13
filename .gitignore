@@ -22,3 +22,7 @@ TileDataEditor
 _pmm
 
 conanfile\.txt
+
+tools/l10n/languages/
+
+tools/l10n/tx/
