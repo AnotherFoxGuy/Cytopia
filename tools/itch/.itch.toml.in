@@ -1,0 +1,6 @@
+[[prereqs]]
+<% if (CMAKE_SIZEOF_VOID_P EQUAL 8) ## 64 bit %>
+name = "vcredist-2019-x64"
+<% elseif (CMAKE_SIZEOF_VOID_P EQUAL 4) ## 32 bit %>
+name = "vcredist-2019-x86"
+<% endif () %>

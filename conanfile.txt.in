@@ -1,0 +1,26 @@
+[generators]
+cmake
+
+[requires]
+<% if (ENABLE_ANGELSCRIPT) %>
+AngelScript/2.33@@anotherfoxguy/stable
+<% endif () %>
+sdl2/2.0.10@@bincrafters/stable
+sdl2_ttf/2.0.15@@bincrafters/stable
+sdl2_image/2.0.5@@bincrafters/stable
+bzip2/1.0.8
+vorbis/1.3.7
+libpng/1.6.37
+freetype/2.10.4
+libnoise/1.0.1@@anotherfoxguy/stable
+openssl/1.1.1i
+<% if (ENABLE_AUDIO) %>
+openal/1.21.0
+<% endif () %>
+zlib/1.2.11
+<% if (ENABLE_VULKAN) %>
+vulkan-sdk/1.1.126@@cytopia/stable
+<% endif () %>
+
+[options]
+*:shared=False
