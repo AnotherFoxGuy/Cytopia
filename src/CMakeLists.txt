@@ -198,15 +198,19 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${_compile_definitions})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${_link_libraries})
 
 # copy the resources to the compiled directory
+include(fast-copy)
 
-add_custom_target(
-        copy_resources
-        ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/resources/ $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/languages/ $<TARGET_FILE_DIR:${PROJECT_NAME}>/languages/
-        COMMENT "Copy the resources to the compiled directory"
-        VERBATIM
-)
+fast_copy(${CMAKE_SOURCE_DIR}/data/resources ${CMAKE_BINARY_DIR}/resources)
+fast_copy(${CMAKE_SOURCE_DIR}/data/languages ${CMAKE_BINARY_DIR}/languages)
+
+# add_custom_target(
+#         copy_resources
+#         ALL
+#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/resources/ $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources/
+#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/languages/ $<TARGET_FILE_DIR:${PROJECT_NAME}>/languages/
+#         COMMENT "Copy the resources to the compiled directory"
+#         VERBATIM
+# )
 
 if (MSVC)
     # set startup project for Visual Studio Builds
