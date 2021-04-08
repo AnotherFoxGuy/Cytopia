@@ -47,7 +47,7 @@ jobs:
 
       - name: Analyze with SonarCloud
         if: env.SONAR_TOKEN != null
-        uses: sonarsource/sonarcloud-github-action@latest
+        uses: sonarsource/sonarcloud-github-action@master
         with:
           args: >
             -Dsonar.organization=cytopia \
