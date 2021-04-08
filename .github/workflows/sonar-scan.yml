@@ -50,8 +50,8 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@master
         with:
           args: >
-            -Dsonar.organization=cytopia \
-            -Dsonar.projectKey=cytopia \
-            -Dsonar.sources=. \
-            -Dsonar.cfamily.build-wrapper-output=bw-output \
+            -Dsonar.organization=cytopia
+            -Dsonar.projectKey=cytopia 
+            -Dsonar.sources=.
+            -Dsonar.cfamily.build-wrapper-output=bw-output
             -Dsonar.host.url=https://sonarcloud.io
