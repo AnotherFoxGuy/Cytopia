@@ -93,7 +93,7 @@ set(SOURCE_FILES
         renderer/SDLRenderer.{hxx,cxx}
         )
 
-if (ANDROID)
+if (BUILD_ANDROID)
     list(APPEND SOURCE_FILES
             util/android/Filesystem.cxx
             )
@@ -176,7 +176,7 @@ if (APPLE)
 
     add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SOURCE_FILES} ${ICON_PATH} ${MAC_RESOURCE_FILES})
 
-elseif (ANDROID)
+elseif (BUILD_ANDROID)
     # On android the final binary is a shared library not an executable.
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 else ()
