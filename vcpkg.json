@@ -6,7 +6,6 @@
     "sdl2-image",
     "sdl2-ttf",
     "libnoise",
-    "angelscript",
     "openal-soft",
     "libvorbis",
     "zlib"

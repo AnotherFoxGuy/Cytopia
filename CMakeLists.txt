@@ -9,6 +9,18 @@ if (PACKAGE_MANAGER STREQUAL "vcpkg")
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 endif()
 
+option(BUILD_TEST "Build Cytopia Tests" ON)
+option(ENABLE_AUDIO "Enable Audio" ON)
+option(ENABLE_MICROPROFILE "Enable microprofile" OFF)
+option(ENABLE_ANGELSCRIPT "Enable AngelScript" ON)
+option(ENABLE_VULKAN "Enable Vulkan" OFF)
+option(ENABLE_DEBUG "Enable Debug (asserts and logs)" OFF)
+option(BUILD_ANDROID "Crossbuild to Android" OFF)
+
+if (BUILD_ANDROID)
+    include(vcpkg_android)
+endif()
+
 # create the cmake project
 project(
         # this will be the ${PROJECT_NAME}
@@ -34,17 +46,6 @@ elseif (CCACHE_PROGRAM)
     message("Using ${CCACHE_PROGRAM} for speeding up build")
 endif ()
 
-
-
-option(BUILD_TEST "Build Cytopia Tests" ON)
-option(ENABLE_AUDIO "Enable Audio" ON)
-option(ENABLE_MICROPROFILE "Enable microprofile" OFF)
-option(ENABLE_ANGELSCRIPT "Enable AngelScript" ON)
-option(ENABLE_VULKAN "Enable Vulkan" OFF)
-option(ENABLE_DEBUG "Enable Debug (asserts and logs)" OFF)
-option(BUILD_ANDROID "Crossbuild to Android" OFF)
-
-
 # setup paths
 SET(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 SET(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/")
@@ -56,90 +57,6 @@ set(_include_directories "${CMAKE_CURRENT_SOURCE_DIR}/external/header_only")
 set(_compile_definitions "")
 set(_link_libraries "")
 
-if (BUILD_ANDROID)
-    message(STATUS "Crossbuilding to Android")
-    # Set some helper variables.
-    string(TOLOWER "${CMAKE_SYSTEM_NAME}" targetSystem)
-    set(projectDir "${CMAKE_CURRENT_LIST_DIR}")
-    set(sourceDir "${projectDir}/source")
-    set(targetName "SimpleExample")
-    set(binDir "${projectDir}/bin")
-
-    # Define executable output dir.
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${binDir}/${targetSystem}")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${binDir}/${targetSystem}")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${binDir}/${targetSystem}")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${binDir}/${targetSystem}_debug")
-
-    find_library(OpenGLES2_LIBRARY GLESv2 REQUIRED)
-    find_library(OpenGLES3_LIBRARY GLESv3 REQUIRED)
-    find_library(ANDROID_LOG_LIBRARY log REQUIRED)
-    find_library(ANDROID_LIBRARY_LIBRARY android REQUIRED)
-    find_library(zlib z)
-
-    set(DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/SDL2/intermediates/ndkBuild)
-    set(NOISE_DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/libnoise/intermediates/cmake)
-    set(OPENAL_DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/openal-soft/intermediates/cmake)
-    set(LIBOGG_DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/libogg/intermediates/cmake)
-    set(LIBVORBIS_DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/libvorbis/intermediates/cmake)
-    set(LIBPNG_DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/libpng/intermediates/cmake)
-    set(ZLIB_DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/zlib/intermediates/cmake)
-    string(TOLOWER ${CMAKE_BUILD_TYPE} ANDROID_BUILD_DIR)
-
-    set(SDL_LOCATION ${CMAKE_SOURCE_DIR}/contrib/)
-
-    ##SDL2
-    set(SDL2_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2.so)
-    add_library(SDL2 SHARED IMPORTED)
-    set_target_properties(SDL2 PROPERTIES IMPORTED_LOCATION ${SDL2_LOCATION})
-
-    ## SDL2_image
-    set(SDL2_IMAGE_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2_image.so)
-    add_library(SDL2_IMAGE SHARED IMPORTED)
-    set_target_properties(SDL2_IMAGE PROPERTIES IMPORTED_LOCATION ${SDL2_IMAGE_LOCATION})
-
-    ## SDL2_ttf
-    set(SDL2_TTF_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2_ttf.so)
-    add_library(SDL2_TTF SHARED IMPORTED)
-    set_target_properties(SDL2_TTF PROPERTIES IMPORTED_LOCATION ${SDL2_TTF_LOCATION})
-
-    #libnoise
-    set(LIBNOISE_LOCATION ${NOISE_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/libnoise.so)
-    add_library(LIBNOISE SHARED IMPORTED)
-    set_target_properties(LIBNOISE PROPERTIES IMPORTED_LOCATION ${LIBNOISE_LOCATION})
-
-    #openal
-    set(OPENAL_LOCATION ${OPENAL_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/libopenal.so)
-    add_library(OPENAL SHARED IMPORTED)
-    set_target_properties(OPENAL PROPERTIES IMPORTED_LOCATION ${OPENAL_LOCATION})
-
-    #ogg
-    set(LIBOGG_LOCATION ${LIBOGG_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/libogg.so)
-    add_library(LIBOGG SHARED IMPORTED)
-    set_target_properties(LIBOGG PROPERTIES IMPORTED_LOCATION ${LIBOGG_LOCATION})
-
-    #zlib ./build/zlib/intermediates/cmake/debug/obj/x86/zlib.so
-    set(ZLIB_LOCATION ${ZLIB_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/zlib.so)
-    add_library(ZLIB SHARED IMPORTED)
-    set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION ${ZLIB_LOCATION})
-
-    #libpng ./build/libpng/intermediates/cmake/debug/obj/x86/libpng.so
-    set(LIBPNG_LOCATION ${LIBPNG_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/libpng.so)
-    add_library(LIBPNG SHARED IMPORTED)
-    set_target_properties(LIBPNG PROPERTIES IMPORTED_LOCATION ${LIBPNG_LOCATION})
-
-    #vorbis ./build/libvorbis/intermediates/cmake/debug/obj/x86/libvorbis.so
-    set(LIBVORBIS_LOCATION ${LIBVORBIS_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/libvorbis.so)
-    add_library(LIBVORBIS SHARED IMPORTED)
-    set_target_properties(LIBVORBIS PROPERTIES IMPORTED_LOCATION ${LIBVORBIS_LOCATION})
-
-    set(LIBVORBISFILE_LOCATION ${LIBVORBIS_DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/${ANDROID_ABI}/libvorbisfile.so)
-    add_library(LIBVORBISFILE SHARED IMPORTED)
-    set_target_properties(LIBVORBISFILE PROPERTIES IMPORTED_LOCATION ${LIBVORBISFILE_LOCATION})
-    # Joysticks were causing trouble on android.
-    add_definitions(-DSDL_JOYSTICK=0)
-endif ()
-
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     list(APPEND _compile_definitions DEBUG)
 endif ()
@@ -149,9 +66,7 @@ if (APPLE AND NOT (PACKAGE_MANAGER STREQUAL "vcpkg"))
     LINK_DIRECTORIES(${LINK_DIRECTORIES} /usr/local/lib)
 endif ()
 
-
 if (PACKAGE_MANAGER STREQUAL "vcpkg")
-
     if (DEFINED ENV{CI})
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
@@ -162,7 +77,9 @@ if (PACKAGE_MANAGER STREQUAL "vcpkg")
 
     find_package(Threads REQUIRED)
 
-    find_package(Angelscript CONFIG REQUIRED)
+    if (ENABLE_ANGELSCRIPT)
+        find_package(Angelscript CONFIG REQUIRED)
+    endif ()
     find_package(Vorbis CONFIG REQUIRED)
     find_package(OpenAL CONFIG REQUIRED)
     find_package(SDL2 CONFIG REQUIRED)
@@ -192,33 +109,7 @@ if (PACKAGE_MANAGER STREQUAL "vcpkg")
     if (ENABLE_VULKAN)
         list(APPEND _link_libraries vulkan::vulkan-sdk)
     endif ()
-
-elseif (BUILD_ANDROID)
-    list(APPEND _link_libraries ${OpenGLES2_LIBRARY}
-            ${ANDROID_LOG_LIBRARY}
-            ${ANDROID_LIBRARY_LIBRARY}
-            SDL2
-            SDL2_IMAGE
-            SDL2_TTF
-            OPENAL
-            LIBVORBIS
-            LIBVORBISFILE
-            LIBOGG
-            z # zlib provided by android NDK
-            LIBNOISE
-            LIBPNG
-
-            )
-    # Include dirs.
-    list(APPEND _include_directories ${CMAKE_SOURCE_DIR}/external/android/SDL/SDL2/include
-            ${CMAKE_SOURCE_DIR}/external/android/SDL/SDL2_image
-            ${CMAKE_SOURCE_DIR}/external/android/SDL/SDL2_ttf
-            ${CMAKE_SOURCE_DIR}/external/android/other/libnoise/src/noise
-            ${CMAKE_SOURCE_DIR}/external/android/other/openal-soft/include
-            ${CMAKE_SOURCE_DIR}/external/android/other/ogg/include
-            ${CMAKE_SOURCE_DIR}/external/android/other/vorbis/include
-            ${CMAKE_SOURCE_DIR}/external/android/other/libpng/
-            )
+   
 elseif (PACKAGE_MANAGER STREQUAL "pkgconfig")
     find_package(PkgConfig REQUIRED)
 
@@ -320,7 +211,7 @@ endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     link_libraries(dbghelp.lib)
-elseif (NOT APPLE AND NOT BUILD_ANDROID)
+elseif (NOT APPLE AND NOT VCPKG_TARGET_ANDROID)
     # Note: Apple supports std::filesystem with macOS10.15 and upwards.
     # Needed for filesystem library
     list(APPEND _link_libraries "stdc++fs")
@@ -397,10 +288,10 @@ if (BUILD_TEST)
     add_subdirectory(tests)
 endif (BUILD_TEST)
 
-if (NOT BUILD_ANDROID)
-    # use Doxygen to generate the documentation
-    find_package(Doxygen)
-endif ()
+
+# use Doxygen to generate the documentation
+find_package(Doxygen)
+
 
 if (DOXYGEN_FOUND)
     add_custom_target(
