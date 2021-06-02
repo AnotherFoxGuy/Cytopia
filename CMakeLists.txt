@@ -215,6 +215,8 @@ elseif (NOT APPLE AND NOT BUILD_ANDROID)
     # Note: Apple supports std::filesystem with macOS10.15 and upwards.
     # Needed for filesystem library
     list(APPEND _link_libraries "stdc++fs")
+elseif (BUILD_ANDROID)
+    list(APPEND _link_libraries "log")
 endif ()
 
 if (ENABLE_MICROPROFILE)

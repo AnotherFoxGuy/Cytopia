@@ -65,3 +65,6 @@ sed -i '14iset (OGG_INCLUDE_DIR "${OGG_SOURCE_DIR}/include")' vorbis/CMakeLists.
 sed -i '15iset (OGG_LIBRARY ${OGG_LIBRARY}/libogg.so)' vorbis/CMakeLists.txt
 
 cd ../../..
+
+
+/workspaces/Cytopia/redist/cmdline-tools/bin/sdkmanager
