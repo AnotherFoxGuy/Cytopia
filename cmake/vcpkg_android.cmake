@@ -16,7 +16,11 @@
 #
 # 1. Check the presence of environment variable ANDROID_NDK_HOME
 #
-if (NOT DEFINED ENV{ANDROID_NDK_HOME})
+if(DEFINED CMAKE_ANDROID_NDK)
+    set(ANDROID_NDK_HOME ${CMAKE_ANDROID_NDK})
+elseif (NOT ANDROID_NDK_HOME)
+    set(ANDROID_NDK_HOME "$ENV{ANDROID_NDK_HOME}")
+else()
     message(FATAL_ERROR "
     Please set an environment variable ANDROID_NDK_HOME
     For example:
@@ -29,7 +33,11 @@ endif()
 #
 # 2. Check the presence of environment variable VCPKG_ROOT
 #
-if (NOT DEFINED ENV{VCPKG_ROOT})
+if (DEFINED ENV{VCPKG_ROOT} )
+    set(VCPKG_ROOT "${ENV{VCPKG_ROOT}}")
+elseif(EXISTS "${CMAKE_SOURCE_DIR}/external/vcpkg/")
+    set(VCPKG_ROOT "${CMAKE_SOURCE_DIR}/external/vcpkg/")
+else ()
     message(FATAL_ERROR "
     Please set an environment variable VCPKG_ROOT
     For example:
@@ -85,8 +93,8 @@ message("vcpkg_android.cmake: VCPKG_TARGET_TRIPLET was set to ${VCPKG_TARGET_TRI
 # When using vcpkg, the vcpkg toolchain shall be specified first. 
 # However, vcpkg provides a way to preload and additional toolchain, 
 # with the VCPKG_CHAINLOAD_TOOLCHAIN_FILE option.
-set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE $ENV{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
-set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE ${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
+set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 message("vcpkg_android.cmake: CMAKE_TOOLCHAIN_FILE was set to ${CMAKE_TOOLCHAIN_FILE}")
 message("vcpkg_android.cmake: VCPKG_CHAINLOAD_TOOLCHAIN_FILE was set to ${VCPKG_CHAINLOAD_TOOLCHAIN_FILE}")
 
