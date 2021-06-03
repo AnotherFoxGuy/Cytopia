@@ -319,5 +319,13 @@ if (WIN32)
     endif ()
 endif ()
 
+
+if(DEFINED COPY_LIBS_HERE)
+    get_filename_component(_AND_ARCH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" NAME)
+    file(COPY "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/" DESTINATION "${COPY_LIBS_HERE}/${_AND_ARCH}/" FILES_MATCHING PATTERN "*.so")
+    file(COPY "${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/libs/${_AND_ARCH}/libc++_shared.so" DESTINATION "${COPY_LIBS_HERE}/${_AND_ARCH}/")
+    message("Copying vcpkg libs to: ${COPY_LIBS_HERE}/${_AND_ARCH}/")
+endif()
+
 include(FeatureSummary)
 feature_summary(WHAT ALL)
