@@ -71,12 +71,12 @@ target("Cytopia")
             "src/engine/ui/menuGroups",
             "src/util"
     )
-    add_defines(
-            "USE_AUDIO",
-            "WIN32"
-    )
+    add_defines("USE_AUDIO")
     add_packages(
             "sdl", "sdl_image", "sdl_ttf", "libnoise", "openal", "vorbis"
     )
-    add_links("dbghelp")
-    add_ldflags("/NODEFAULTLIB:MSVCRT")
+    if is_os("windows") then
+        add_defines("WIN32")
+        add_ldflags("/NODEFAULTLIB:MSVCRT")
+        add_links("dbghelp", "Winmm", "Imm32", "Setupapi", "Version")
+    end
