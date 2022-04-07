@@ -8,7 +8,7 @@
 
 #include "json.hxx"
 
-#include <noise/noise.h>
+#include <noise.h>
 
 using json = nlohmann::json;
 

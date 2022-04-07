@@ -12,31 +12,55 @@ option("package_manager")
     set_values("system", "conan", "vcpkg")
 option_end()
 
+package("libnoise")
+    add_deps("cmake")
+    set_sourcedir(path.join(os.scriptdir(), "external", "libnoise"))
+    on_install(function (package)
+        local configs = {}
+        table.insert(configs, "-DCMAKE_BUILD_TYPE=" .. (package:debug() and "Debug" or "Release"))
+        table.insert(configs, "-DBUILD_SHARED_LIBS=" .. (package:config("shared") and "ON" or "OFF"))
+        table.insert(configs, "-DBUILD_LIBNOISE_UTILS=OFF")
+        import("package.tools.cmake").install(package, configs)
+    end)
+    on_test(function (package)
+        assert(package:check_cxxsnippets({test = [[
+        #define USE_BLOB
+        #include <noise.h>
+        void test(int argc, char** argv) {
+                noise::module::Perlin terrainHeightPerlin;
+                terrainHeightPerlin.SetSeed(205005);
+                terrainHeightPerlin.SetFrequency(0.003 / 32);
+                terrainHeightPerlin.SetLacunarity(1.5);
+                terrainHeightPerlin.SetOctaveCount(16);
+        }
+        ]]}, {configs = {languages = "cxx11"}, includes = "noise.h"}))
+    end)
+package_end()
+
 if is_config("package_manager", "system") then
-    add_requires("sdl2", { alias = "sdl2" })
-    add_requires("sdl2_image", { alias = "sdl2_image" })
-    add_requires("sdl2_ttf", { alias = "sdl2_ttf" })
-    add_requires("libnoise", { alias = "libnoise" })
-    add_requires("openal", { alias = "openal" })
-    add_requires("vorbis", { alias = "vorbis" })
-    add_requires("angelscript", { alias = "angelscript", optional = true })
+    add_requires("libsdl", { alias = "sdl2", system = true })
+    add_requires("libsdl_image", { alias = "sdl2_image", system = true })
+    add_requires("libsdl_ttf", { alias = "sdl2_ttf", system = true })
+    add_requires("openal", { alias = "openal", system = true })
+    add_requires("vorbis", { alias = "vorbis", system = true })
+    add_requires("vorbisfile", { alias = "vorbisfile", system = true })
+    add_requires("angelscript", { alias = "angelscript", system = true, optional = true })
 elseif is_config("package_manager", "conan") then
     add_requires("conan::sdl/2.0.20", { alias = "sdl2" })
     add_requires("conan::sdl_image/2.0.5", { alias = "sdl2_image" })
     add_requires("conan::sdl_ttf/2.0.18", { alias = "sdl2_ttf" })
-    add_requires("conan::libnoise/1.0.0", { alias = "libnoise" })
     add_requires("conan::openal/1.19.1", { alias = "openal" })
     add_requires("conan::vorbis/1.3.7", { alias = "vorbis" })
     add_requires("conan::angelscript/2.35.1", { alias = "angelscript", optional = true })
 elseif is_config("package_manager", "vcpkg") then
-    add_requires("vcpkg::sdl", { alias = "sdl2" })
-    add_requires("vcpkg::sdl_image", { alias = "sdl2_image" })
-    add_requires("vcpkg::sdl_ttf", { alias = "sdl2_ttf" })
-    add_requires("vcpkg::libnoise", { alias = "libnoise" })
-    add_requires("vcpkg::openal", { alias = "openal" })
-    add_requires("vcpkg::vorbis", { alias = "vorbis" })
+    add_requires("vcpkg::sdl2", { alias = "sdl2" })
+    add_requires("vcpkg::sdl2-image", { alias = "sdl2_image" })
+    add_requires("vcpkg::sdl2-ttf", { alias = "sdl2_ttf" })
+    add_requires("vcpkg::openal-soft", { alias = "openal" })
+    add_requires("vcpkg::libvorbis", { alias = "vorbis" })
     add_requires("vcpkg::angelscript", { alias = "angelscript", optional = true })
 end
+add_requires("libnoise")
 
 add_rules("mode.debug", "mode.release")
 
@@ -103,7 +127,7 @@ target("Cytopia")
     )
     add_defines("USE_AUDIO", "VERSION=\"Cytopia 2000 - Urban Update\"")
     add_packages(
-            "sdl2", "sdl2_image", "sdl2_ttf", "libnoise", "openal", "vorbis", "angelscript"
+            "sdl2", "sdl2_image", "sdl2_ttf", "libnoise", "openal", "vorbis", "vorbisfile", "angelscript"
     )
     if is_os("windows") then
         add_defines("WIN32")
@@ -120,6 +144,11 @@ target("Cytopia")
                 "advapi32",
                 "setupapi",
                 "shell32"
+        )
+    elseif is_os("linux") then
+        add_links(
+                "z",
+                "pthread"
         )
     end
     if has_package("angelscript") then

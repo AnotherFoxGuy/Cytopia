@@ -1,0 +1,3 @@
+[submodule "external/libnoise"]
+	path = external/libnoise
+	url = https://github.com/CytopiaTeam/libnoise.git
