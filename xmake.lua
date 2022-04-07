@@ -1,12 +1,14 @@
-set_runtimes("MD")
+if is_os("windows") then
+    set_runtimes("MD")
+end
+
 add_requires("conan::sdl/2.0.20", { alias = "sdl" })
 add_requires("conan::sdl_image/2.0.5", { alias = "sdl_image" })
 add_requires("conan::sdl_ttf/2.0.18", { alias = "sdl_ttf" })
 add_requires("conan::libnoise/1.0.0", { alias = "libnoise" })
 add_requires("conan::openal/1.19.1", { alias = "openal" })
 add_requires("conan::vorbis/1.3.7", { alias = "vorbis" })
--- add_requires("conan::angelscript/2.35.1", {alias = "angelscript"})
-
+add_requires("conan::angelscript/2.35.1", { alias = "angelscript", optional = true })
 
 add_rules("mode.debug", "mode.release")
 
@@ -71,9 +73,9 @@ target("Cytopia")
             "src/engine/ui/menuGroups",
             "src/util"
     )
-    add_defines("USE_AUDIO")
+    add_defines("USE_AUDIO", "VERSION=\"Cytopia 2000 - Urban Update\"")
     add_packages(
-            "sdl", "sdl_image", "sdl_ttf", "libnoise", "openal", "vorbis"
+            "sdl", "sdl_image", "sdl_ttf", "libnoise", "openal", "vorbis", "angelscript"
     )
     if is_os("windows") then
         add_defines("WIN32")
@@ -92,3 +94,13 @@ target("Cytopia")
                 "shell32"
         )
     end
+    if has_package("angelscript") then
+        add_defines("USE_ANGELSCRIPT")
+        add_includedirs("external/as_add_on")
+        add_files(
+                "external/as_add_on/scriptbuilder/scriptbuilder.cpp",
+                "external/as_add_on/scriptstdstring/scriptstdstring.cpp",
+                "src/Scripting/ScriptEngine.cxx"
+        )
+    end
+target_end()
