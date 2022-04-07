@@ -2,13 +2,41 @@ if is_os("windows") then
     set_runtimes("MD")
 end
 
-add_requires("conan::sdl/2.0.20", { alias = "sdl" })
-add_requires("conan::sdl_image/2.0.5", { alias = "sdl_image" })
-add_requires("conan::sdl_ttf/2.0.18", { alias = "sdl_ttf" })
-add_requires("conan::libnoise/1.0.0", { alias = "libnoise" })
-add_requires("conan::openal/1.19.1", { alias = "openal" })
-add_requires("conan::vorbis/1.3.7", { alias = "vorbis" })
-add_requires("conan::angelscript/2.35.1", { alias = "angelscript", optional = true })
+option("package_manager")
+    set_showmenu(true)
+    if is_os("windows") then
+        set_default("conan")
+    else
+        set_default("system")
+    end
+    set_values("system", "conan", "vcpkg")
+option_end()
+
+if is_config("package_manager", "system") then
+    add_requires("sdl2", { alias = "sdl2" })
+    add_requires("sdl2_image", { alias = "sdl2_image" })
+    add_requires("sdl2_ttf", { alias = "sdl2_ttf" })
+    add_requires("libnoise", { alias = "libnoise" })
+    add_requires("openal", { alias = "openal" })
+    add_requires("vorbis", { alias = "vorbis" })
+    add_requires("angelscript", { alias = "angelscript", optional = true })
+elseif is_config("package_manager", "conan") then
+    add_requires("conan::sdl/2.0.20", { alias = "sdl2" })
+    add_requires("conan::sdl_image/2.0.5", { alias = "sdl2_image" })
+    add_requires("conan::sdl_ttf/2.0.18", { alias = "sdl2_ttf" })
+    add_requires("conan::libnoise/1.0.0", { alias = "libnoise" })
+    add_requires("conan::openal/1.19.1", { alias = "openal" })
+    add_requires("conan::vorbis/1.3.7", { alias = "vorbis" })
+    add_requires("conan::angelscript/2.35.1", { alias = "angelscript", optional = true })
+elseif is_config("package_manager", "vcpkg") then
+    add_requires("vcpkg::sdl", { alias = "sdl2" })
+    add_requires("vcpkg::sdl_image", { alias = "sdl2_image" })
+    add_requires("vcpkg::sdl_ttf", { alias = "sdl2_ttf" })
+    add_requires("vcpkg::libnoise", { alias = "libnoise" })
+    add_requires("vcpkg::openal", { alias = "openal" })
+    add_requires("vcpkg::vorbis", { alias = "vorbis" })
+    add_requires("vcpkg::angelscript", { alias = "angelscript", optional = true })
+end
 
 add_rules("mode.debug", "mode.release")
 
@@ -75,7 +103,7 @@ target("Cytopia")
     )
     add_defines("USE_AUDIO", "VERSION=\"Cytopia 2000 - Urban Update\"")
     add_packages(
-            "sdl", "sdl_image", "sdl_ttf", "libnoise", "openal", "vorbis", "angelscript"
+            "sdl2", "sdl2_image", "sdl2_ttf", "libnoise", "openal", "vorbis", "angelscript"
     )
     if is_os("windows") then
         add_defines("WIN32")
