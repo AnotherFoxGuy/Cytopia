@@ -9,6 +9,10 @@
 void SIG_handler(int signal);
 #endif
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 SDL_AssertState AssertionHandler(const SDL_AssertData *, void *);
 
 int protected_main(int argc, char **argv)
@@ -54,6 +58,26 @@ int protected_main(int argc, char **argv)
   return EXIT_SUCCESS;
 }
 
+#ifdef WIN32
+int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
+{
+  try
+  {
+    return protected_main(__argc, __argv);
+  }
+  catch (std::exception &e)
+  {
+    LOG(LOG_ERROR) << e.what();
+  }
+  catch (...)
+  {
+    LOG(LOG_ERROR) << "Caught unknown exception";
+  }
+
+  return EXIT_FAILURE;
+}
+#endif
+
 int main(int argc, char **argv)
 {
 #ifndef __ANDROID__
@@ -81,3 +105,4 @@ int main(int argc, char **argv)
 
   return EXIT_FAILURE;
 }
+

@@ -8,11 +8,7 @@
 
 #include "json.hxx"
 
-#ifdef NOISE_IN_SUBDIR
 #include <noise/noise.h>
-#else
-#include <noise.h>
-#endif
 
 using json = nlohmann::json;
 
