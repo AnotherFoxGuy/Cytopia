@@ -1,4 +1,4 @@
--- set_runtimes("MD")
+set_runtimes("MD")
 add_requires("conan::sdl/2.0.20", { alias = "sdl" })
 add_requires("conan::sdl_image/2.0.5", { alias = "sdl_image" })
 add_requires("conan::sdl_ttf/2.0.18", { alias = "sdl_ttf" })
@@ -77,6 +77,18 @@ target("Cytopia")
     )
     if is_os("windows") then
         add_defines("WIN32")
-        add_ldflags("/NODEFAULTLIB:MSVCRT")
-        add_links("dbghelp", "Winmm", "Imm32", "Setupapi", "Version")
+        add_links(
+                "dbghelp",
+                "user32",
+                "gdi32",
+                "winmm",
+                "imm32",
+                "ole32",
+                "oleaut32",
+                "version",
+                "uuid",
+                "advapi32",
+                "setupapi",
+                "shell32"
+        )
     end
