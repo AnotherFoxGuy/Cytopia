@@ -1,4 +1,5 @@
 include(codecov)
+include(CTest)
 
 set(TESTS_PROJECT_NAME Cytopia_Tests)
 

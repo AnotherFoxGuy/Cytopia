@@ -1,6 +1,6 @@
 name: Build game
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   build-msvc:
@@ -44,14 +44,8 @@ jobs:
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.10.0
 
-      - name: Build
-        run: |
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release .
-          ninja
-          sccache --show-stats
-
-      - name: Test
-        run: ctest -VV --output-on-failure
+      - name: Build and Test
+        run: ctest -S CDashCI.cmake -VV
 
       - name: Upload build to itch.io
         env:
@@ -114,17 +108,10 @@ jobs:
           curl "https://raw.githubusercontent.com/AnotherFoxGuy/ci-scripts/main/install-sccache.sh" | sudo bash
         shell: bash
 
-      - name: Build
-        run: |
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release .
-          ninja
-          sccache --show-stats
-        shell: bash
-
-      - name: Test
-        uses: GabrielBB/xvfb-action@v1.6
+      - name: Build and Test
+        uses: GabrielBB/xvfb-action@v1
         with:
-          run: ctest --output-on-failure --repeat="until-pass:5"
+          run: ctest -S CDashCI.cmake -VV
 
       - name: Upload build to itch.io
         env:
@@ -169,21 +156,22 @@ jobs:
       - name: Install dependencies
         run: brew install conan sccache ninja
 
-      - name: Build
+      - name: PrePackage
         run: |
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release .
-          ninja
-          mkdir -p bin/Cytopia.App/Resources/resources
+          mkdir -p bin/Cytopia.App/Contents/Resources/
+          mkdir -p bin/resources
           cp -pR data/resources bin/Cytopia.App/Contents/Resources/
           cp -pR data/resources bin/resources
+
+      - name: Build and Test
+        run: ctest -S CDashCI.cmake -VV
+
+      - name: Package
+        run: |
           ninja package
           rm -rf bin/Cytopia.App/Contents/MacOS/resources
           rm -rf bin/Cytopia.App/Resources
           sccache --show-stats
-        shell: bash
-
-      - name: Test
-        run: ctest -VV --output-on-failure
         shell: bash
 
       - name: Upload build to itch.io
