@@ -27,6 +27,8 @@ ctest_start(Continuous)
 # finally do the configure, build, test and submit steps
 if (UNIX)
     set(COV_ARG "\"-DENABLE_COVERAGE=ON\"")
+    find_program(GCOV_BIN gcov)
+    set(CTEST_COVERAGE_COMMAND ${GCOV_BIN})
 endif ()
 ctest_configure(OPTIONS "-DCMAKE_BUILD_TYPE=${CTEST_BUILD_CONFIGURATION}\" ${COV_ARG} \"-DBUILD_TEST=ON" RETURN_VALUE res)
 check_status("${res}" "Config")
