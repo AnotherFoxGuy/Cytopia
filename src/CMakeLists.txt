@@ -19,6 +19,7 @@ set(SOURCE_FILES
         services/GameClock.{hxx,cxx}
         services/GameClock.inl.hxx
         services/ResourceManager.{hxx,cxx}
+        services/DiscordRpc.{hxx,cxx}
         services/ResourceManager.inl.hxx
         engine/MessageQueue.hxx
         engine/MessageQueue.inl.hxx
@@ -159,6 +160,7 @@ endif ()
 target_include_directories(
         ${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/external/header_only
+        ${CMAKE_SOURCE_DIR}/external/discord/include
         engine
         engine/basics
         engine/common
@@ -170,6 +172,13 @@ target_include_directories(
         util
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${_compile_definitions})
+
+find_library(DISCORD_SDK_LIB
+    "discord_game_sdk"
+    PATHS "${CMAKE_SOURCE_DIR}/external/discord/lib/x86_64/"
+    NO_DEFAULT_PATH
+)
+
 target_link_libraries(
         ${PROJECT_NAME} PRIVATE
         IMGUI
@@ -179,6 +188,7 @@ target_link_libraries(
         SDL::SDL_image
         LibNoise::LibNoise
         ZLIB::ZLIB
+        ${DISCORD_SDK_LIB}
 )
 
 if (ANDROID)
@@ -242,6 +252,11 @@ install(TARGETS ${PROJECT_NAME} DESTINATION .)
 
 if (WIN32)
     install(DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>/" DESTINATION . FILES_MATCHING PATTERN "*.dll")
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD        # Adds a post-build event to MyTest
+                       COMMAND ${CMAKE_COMMAND} -E copy  # which executes "cmake - E copy_if_different..."
+                        "${CMAKE_SOURCE_DIR}/external/discord/lib/x86_64/discord_game_sdk.dll"      # <--this is in-file
+                        ${RUNTIME_OUTPUT_DIRECTORY})
 endif ()
 
 if (NOT APPLE)

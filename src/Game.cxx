@@ -9,6 +9,7 @@
 #include "engine/basics/GameStates.hxx"
 #include "Filesystem.hxx"
 #include "OSystem.hxx"
+#include "services/DiscordRpc.hxx"
 #include <Map.hxx>
 #include <MapFunctions.hxx>
 #include "../game/ui/BuildMenu.hxx"
@@ -75,6 +76,7 @@ void Game::initialize()
 
   // we need to instantiate the Map object to be able to send signals for new / load game
   MapFunctions::instance();
+  DiscordRpc::init();
 
   LOG(LOG_DEBUG) << "Initialized Game Object";
 }
@@ -189,6 +191,7 @@ void Game::run(bool SkipMenu)
 
 void Game::shutdown()
 {
+  DiscordRpc::shutdown();
   LOG(LOG_DEBUG) << "In shutdown";
   TTF_Quit();
   SDL_Quit();

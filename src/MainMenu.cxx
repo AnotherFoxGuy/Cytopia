@@ -8,6 +8,7 @@
 #include "engine/UIManager.hxx"
 #include "engine/basics/Settings.hxx"
 #include "OSystem.hxx"
+#include "services/DiscordRpc.hxx"
 
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -51,6 +52,8 @@ bool mainMenu()
   else
     m_AudioMixer.play(AudioTrigger::MainMenu, Coordinate3D{0, 3, 0.5});
 #endif // USE_AUDIO
+
+  DiscordRpc::updatePresence("Main menu");
 
   auto logoTex = ResourcesManager::instance().getUITexture("Cytopia_Logo");
   auto discordTex = ResourcesManager::instance().getUITexture("Discord_icon");
@@ -182,6 +185,8 @@ bool mainMenu()
       ui::PopFont();
       ui::PopStyleVar(1);
     }
+
+    DiscordRpc::processCallback();
 
     /* FPS counter.*/
     /** @TODO remove or alter to use existing fps counter from debug menu */
