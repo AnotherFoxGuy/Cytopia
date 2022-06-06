@@ -1,0 +1,12 @@
+find_program(SCCACHE_PROGRAM sccache)
+find_program(CCACHE_PROGRAM ccache)
+if (SCCACHE_PROGRAM)
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}" CACHE INTERNAL "")
+    message("Using ${SCCACHE_PROGRAM} for speeding up build")
+elseif (CCACHE_PROGRAM)
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}" CACHE INTERNAL "")
+    message("Using ${CCACHE_PROGRAM} for speeding up build")
+endif ()
+
+set(FETCHCONTENT_QUIET OFF)
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/source")

@@ -1,0 +1,2 @@
+rootProject.name = 'Cytopia-Android'
+include 'SDL2', 'openal', 'libogg', 'libnoise', 'libvorbis', 'Cytopia'
