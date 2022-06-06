@@ -5,20 +5,20 @@ android {
     // buildToolsVersion "28.0.3"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 15
         targetSdkVersion 32
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             // abiFilters "armeabi-v7a"
             abiFilters "x86", "armeabi-v7a", "arm64-v8a"
 
-        }
-        externalNativeBuild {
-            cmake {
-                arguments "-DANDROID_APP_PLATFORM=android-16",
-                        "-DANDROID_STL=c++_shared",
-                        "-DSDL2IMAGE_SAMPLES=OFF",
-                        "-DSDL2IMAGE_VENDORED=OFF"
-            }
         }
     }
     buildTypes {
@@ -27,23 +27,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     externalNativeBuild {
         cmake {
             path 'CMakeLists.txt'
         }
     }
+
     buildFeatures {
         prefabPublishing true
     }
+
     prefab {
-        SDL2 {
-            headers "source/sdl2-src/include"
-        }
-        SDL2_image {
-            headers "source/sdl2_image-src"
-        }
-        SDL2_ttf {
-            headers "source/sdl2_ttf-src"
+        zlib {
+            headers "source/zlib-src/"
         }
     }
 }
@@ -55,7 +52,4 @@ dependencies {
     // })
     // compile 'com.android.support:appcompat-v7:28.0.0'
     // testCompile 'junit:junit:4.12'
-
-    implementation project(':zlib')
-    implementation project(':libpng')
 }

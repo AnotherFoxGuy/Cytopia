@@ -44,5 +44,5 @@ target_link_libraries(VorbisFile::VorbisFile INTERFACE libvorbis::vorbis libogg:
 add_definitions(-DSDL_JOYSTICK=0)
 
 
-add_subdirectory(../..)
+add_subdirectory("../.." "${CMAKE_BINARY_DIR}/src")
 feature_summary(WHAT ALL FILENAME ${CMAKE_BINARY_DIR}/feature_summary.log)

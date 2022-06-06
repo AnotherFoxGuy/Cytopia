@@ -7,19 +7,23 @@ include(FetchContent)
 include(../BuildHelper.cmake)
 
 FetchContent_Declare(
-        SDL
+        SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
         GIT_TAG release-2.0.22
 )
-FetchContent_Declare(
-        SDL_image
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-        GIT_TAG release-2.0.5
-)
+FetchContent_MakeAvailable(SDL2)
 
 FetchContent_Declare(
-        SDL_ttf
+        SDL2_image
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+        GIT_SUBMODULES_RECURSE OFF
+        GIT_TAG candidate-2.5.1
+)
+FetchContent_MakeAvailable(SDL2_image)
+
+FetchContent_Declare(
+        SDL2_ttf
         GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
         GIT_TAG release-2.0.18
 )
-FetchContent_MakeAvailable(SDL SDL_image SDL_ttf)
+FetchContent_MakeAvailable(SDL2_ttf)
