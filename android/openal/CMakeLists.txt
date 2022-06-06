@@ -9,6 +9,6 @@ include(../BuildHelper.cmake)
 FetchContent_Declare(
         openal
         GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-        GIT_TAG 1.22.0
+#        GIT_TAG 1.22.0
 )
 FetchContent_MakeAvailable(openal)

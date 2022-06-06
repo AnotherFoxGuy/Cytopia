@@ -16,8 +16,8 @@ android {
                         "-DALSOFT_UTILS=OFF",
                         "-DALSOFT_TESTS=OFF",
                         "-DALSOFT_EMBED_HRTF_DATA=YES",
-                        "-DANDROID_STL=c++_shared",
-                        "-DANDROID_ARM_NEON=ON"
+                        "-DANDROID_STL=c++_shared"
+//                        "-DANDROID_ARM_NEON=ON"
             }
         }
 

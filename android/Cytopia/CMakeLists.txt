@@ -1,14 +1,16 @@
 # ensure cmake features we need
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/source/cmake" "${CMAKE_SOURCE_DIR}/source/cmake/find-modules")
+set(CYTOPIA_SRC_DIR "${CMAKE_SOURCE_DIR}/../..")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CYTOPIA_SRC_DIR}/source/cmake" "${CYTOPIA_SRC_DIR}/source/cmake/find-modules")
 include(FeatureSummary)
 
 project(build_wrapper)
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/source/external/header_only
+        ${CYTOPIA_SRC_DIR}/source/external/header_only
 )
 find_library(ANDROID_LOG_LIBRARY log REQUIRED)
 find_library(ANDROID_LIBRARY_LIBRARY android REQUIRED)
@@ -44,5 +46,5 @@ target_link_libraries(VorbisFile::VorbisFile INTERFACE libvorbis::vorbis libogg:
 add_definitions(-DSDL_JOYSTICK=0)
 
 
-add_subdirectory("../.." "${CMAKE_BINARY_DIR}/src")
+add_subdirectory("${CYTOPIA_SRC_DIR}" "${CMAKE_BINARY_DIR}/src")
 feature_summary(WHAT ALL FILENAME ${CMAKE_BINARY_DIR}/feature_summary.log)
