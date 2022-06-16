@@ -20,7 +20,7 @@
 #include "imgui_impl_sdlrenderer.h"
 
 #ifdef USE_ANGELSCRIPT
-#include "Scripting/ScriptEngine.hxx"
+#include "scripting/ScriptEngine.hxx"
 #endif
 
 #ifdef USE_MOFILEREADER
