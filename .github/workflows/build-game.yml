@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: |
           conan install . -b missing -pr:b=tools/conan-profiles/vs-22-release-ninja -pr=tools/conan-profiles/vs-22-release-ninja
-          cmake --preset conan-release -DBUILD_TEST=ON
+          cmake --preset conan-release -DBUILD_TEST=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           ninja
 
       - name: Test
@@ -143,7 +143,7 @@ jobs:
       - name: Configure
         run: |
           conan install . -s build_type=Release -b missing -pr:b=default -c tools.cmake.cmaketoolchain:generator="Ninja"
-          cmake --preset conan-release
+          cmake --preset conan-release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Build
         run: |
@@ -170,6 +170,8 @@ jobs:
   build-appleclang:
     name: MacOS
     runs-on: macos-latest
+    env:
+      SCCACHE_GHA_ENABLED: "true"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -181,6 +183,16 @@ jobs:
           key: conan-mac-${{ hashFiles('conanfile.py') }}
           path: ~/.conan2/
 
+      - name: Configure sccache
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.4
+
       - name: Install dependencies
         run: brew install conan ninja
 
@@ -188,7 +200,7 @@ jobs:
         run: |
           conan profile detect --force
           conan install . -s build_type=Release -b missing -pr:b=default -c tools.cmake.cmaketoolchain:generator="Ninja"
-          cmake --preset conan-release
+          cmake --preset conan-release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           ninja
           mkdir -p bin/Cytopia.App/Resources/resources
           cp -pR data/resources bin/Cytopia.App/Contents/Resources/
